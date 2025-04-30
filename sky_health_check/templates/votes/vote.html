@@ -1,0 +1,273 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Vote | Sky Health Check{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Health Check Vote</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Select Team</h5>
+                    <select class="form-select" id="team-select">
+                        <option selected disabled>Select Team</option>
+                        {% for team in teams %}
+                        <option value="{{ team.id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Select Session</h5>
+                    <select class="form-select" id="session-select" disabled>
+                        <option selected disabled>Select Session</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Vote</h5>
+                    <button class="btn btn-primary w-100" id="start-vote-btn" disabled>Start Voting</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="voting-area" class="d-none">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0" id="card-title">Card 1</h5>
+                    <button class="btn btn-sm btn-outline-secondary" id="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                
+                <p class="card-text" id="card-description">Card Description</p>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">The Crappy Example:</h6>
+                                <p class="card-text" id="crappy-example">Description of the crappy example.</p>
+                                
+                                <div class="text-center">
+                                    <div class="traffic-light">
+                                        <div class="light red"></div>
+                                        <div class="light amber" style="opacity: 0.3;"></div>
+                                        <div class="light green" style="opacity: 0.3;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">The Good Example:</h6>
+                                <p class="card-text" id="good-example">Description of the good example.</p>
+                                
+                                <div class="text-center">
+                                    <div class="traffic-light">
+                                        <div class="light red" style="opacity: 0.3;"></div>
+                                        <div class="light amber" style="opacity: 0.3;"></div>
+                                        <div class="light green"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mb-3">Please Vote Below</h5>
+                
+                <div class="row mb-4">
+                    <div class="col-md-4 text-center">
+                        <div class="traffic-light vote-option" data-value="red">
+                            <div class="light red"></div>
+                            <div class="light amber" style="opacity: 0.3;"></div>
+                            <div class="light green" style="opacity: 0.3;"></div>
+                        </div>
+                        <p>Declining</p>
+                    </div>
+                    
+                    <div class="col-md-4 text-center">
+                        <div class="traffic-light vote-option" data-value="amber">
+                            <div class="light red" style="opacity: 0.3;"></div>
+                            <div class="light amber"></div>
+                            <div class="light green" style="opacity: 0.3;"></div>
+                        </div>
+                        <p>Stable</p>
+                    </div>
+                    
+                    <div class="col-md-4 text-center">
+                        <div class="traffic-light vote-option" data-value="green">
+                            <div class="light red" style="opacity: 0.3;"></div>
+                            <div class="light amber" style="opacity: 0.3;"></div>
+                            <div class="light green"></div>
+                        </div>
+                        <p>Improving</p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5 class="mb-3">Feedback</h5>
+                    <textarea class="form-control" id="feedback" rows="3" placeholder="Comment from the user..."></textarea>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-secondary" id="prev-card-btn">Previous Card</button>
+                    <button class="btn btn-primary" id="save-vote-btn">Save</button>
+                    <button class="btn btn-secondary" id="next-card-btn">Next Card</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Animation for vote selection
+    document.addEventListener('DOMContentLoaded', function() {
+        const voteOptions = document.querySelectorAll('.vote-option');
+        let selectedVote = null;
+        
+        voteOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                voteOptions.forEach(opt => {
+                    opt.classList.remove('selected');
+                    opt.style.transform = 'scale(1)';
+                    opt.style.boxShadow = 'none';
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                this.style.transform = 'scale(1.1)';
+                this.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
+                selectedVote = this.dataset.value;
+            });
+            
+            // Add hover animation
+            option.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'transform 0.3s ease';
+                }
+            });
+            
+            option.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.transform = 'scale(1)';
+                }
+            });
+        });
+        
+        // Team selection changes
+        const teamSelect = document.getElementById('team-select');
+        const sessionSelect = document.getElementById('session-select');
+        const startVoteBtn = document.getElementById('start-vote-btn');
+        
+        teamSelect.addEventListener('change', function() {
+            if (this.value) {
+                sessionSelect.disabled = false;
+                // In a real implementation, this would fetch sessions for the selected team
+                sessionSelect.innerHTML = '<option selected disabled>Select Session</option>' +
+                                         '<option value="1">Q1 2025</option>' +
+                                         '<option value="2">Q2 2025</option>';
+            } else {
+                sessionSelect.disabled = true;
+                startVoteBtn.disabled = true;
+            }
+        });
+        
+        sessionSelect.addEventListener('change', function() {
+            if (this.value) {
+                startVoteBtn.disabled = false;
+            } else {
+                startVoteBtn.disabled = true;
+            }
+        });
+        
+        // Start voting button
+        startVoteBtn.addEventListener('click', function() {
+            document.getElementById('voting-area').classList.remove('d-none');
+            document.getElementById('voting-area').classList.add('fade-in');
+            
+            // Scroll to voting area
+            document.getElementById('voting-area').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+        
+        // Navigation buttons
+        document.getElementById('back-btn').addEventListener('click', function() {
+            document.getElementById('voting-area').classList.add('d-none');
+        });
+        
+        // Card navigation (would be connected to actual data in implementation)
+        let currentCardIndex = 0;
+        const cards = [
+            {
+                title: 'Code Quality',
+                description: 'How well is the codebase maintained?',
+                crappyExample: 'Spaghetti code with no documentation or tests.',
+                goodExample: 'Well-structured code with comprehensive documentation and tests.'
+            },
+            {
+                title: 'Team Collaboration',
+                description: 'How well does the team work together?',
+                crappyExample: 'Team members work in silos with minimal communication.',
+                goodExample: 'Team members actively collaborate, share knowledge, and support each other.'
+            },
+            {
+                title: 'Delivery Pace',
+                description: 'How quickly and reliably does the team deliver?',
+                crappyExample: 'Frequent delays, missed deadlines, and unpredictable delivery.',
+                goodExample: 'Consistent delivery pace with reliable estimates and on-time completion.'
+            }
+        ];
+        
+        function updateCardDisplay() {
+            const card = cards[currentCardIndex];
+            document.getElementById('card-title').textContent = card.title;
+            document.getElementById('card-description').textContent = card.description;
+            document.getElementById('crappy-example').textContent = card.crappyExample;
+            document.getElementById('good-example').textContent = card.goodExample;
+            
+            // Update navigation buttons
+            document.getElementById('prev-card-btn').disabled = currentCardIndex === 0;
+            document.getElementById('next-card-btn').disabled = currentCardIndex === cards.length - 1;
+        }
+        
+        document.getElementById('prev-card-btn').addEventListener('click', function() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateCardDisplay();
+            }
+        });
+        
+        document.getElementById('next-card-btn').addEventListener('click', function() {
+            if (currentCardIndex < cards.length - 1) {
+                currentCardIndex++;
+                updateCardDisplay();
+            }
+        });
+        
+        // Initialize first card
+        updateCardDisplay();
+    });
+</script>
+{% endblock %}
