@@ -1,0 +1,141 @@
+/* Custom CSS for Sky Health Check */
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+.footer {
+    background-color: #f8f9fa;
+}
+
+/* Add custom styles based on mockups later */
+
+/* Example animation - smooth transition */
+.page-transition {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.page-transition.visible {
+    opacity: 1;
+}
+
+/* Styles for Voting Page based on Traffic Vote.png */
+.vote-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+}
+
+.vote-card img {
+    max-width: 100px; /* Adjust as needed */
+    height: auto;
+    display: block;
+    margin: 10px auto;
+}
+
+.vote-options {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.vote-options .btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px solid transparent;
+    padding: 10px;
+}
+
+.vote-options .btn.selected {
+    border-color: #0d6efd; /* Bootstrap primary color */
+    box-shadow: 0 0 5px rgba(13, 110, 253, 0.5);
+}
+
+.vote-options .btn i { /* If using icons for arrows */
+    font-size: 1.5em;
+    margin-bottom: 5px;
+}
+
+/* Add styles for login/signup pages based on mockups */
+.auth-container {
+    max-width: 450px;
+    margin: 50px auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.auth-header {
+    /* Styles for the gradient background header if needed */
+    padding: 60px 20px;
+    color: white;
+    text-align: center;
+    /* Add gradient background */
+    background: linear-gradient(135deg, #f94b7a, #5c2d91); /* Example gradient */
+}
+
+.auth-form-container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-top: -40px; /* Overlap header */
+    position: relative;
+    z-index: 1;
+}
+
+/* Adjustments based on Sign IN/UP mockups */
+.gradient-background {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #00bfff, #ff4500); /* Placeholder gradient */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-box {
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 450px;
+}
+
+.auth-box .form-control {
+    margin-bottom: 15px;
+}
+
+.auth-box .btn-primary {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1em;
+}
+
+.auth-top-nav {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.auth-top-nav .btn {
+    margin-left: 10px;
+}
+

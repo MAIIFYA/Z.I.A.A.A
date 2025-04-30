@@ -1,0 +1,125 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Profile | Sky Health Check{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Your Profile</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Update Profile Information</h5>
+                    
+                    <form method="post" action="{% url 'profile' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_first_name" class="form-label">First Name</label>
+                                <input type="text" name="first_name" id="id_first_name" class="form-control" value="{{ user.first_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_last_name" class="form-label">Last Name</label>
+                                <input type="text" name="last_name" id="id_last_name" class="form-control" value="{{ user.last_name }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            <input type="text" name="username" id="id_username" class="form-control" value="{{ user.username }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email Address</label>
+                            <input type="email" name="email" id="id_email" class="form-control" value="{{ user.email }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <input type="text" class="form-control" value="{{ user.get_role_display }}" disabled>
+                        </div>
+                        
+                        {% if user.team %}
+                        <div class="mb-3">
+                            <label class="form-label">Team</label>
+                            <input type="text" class="form-control" value="{{ user.team.name }}" disabled>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Department</label>
+                            <input type="text" class="form-control" value="{{ user.team.department.name }}" disabled>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Change Password</h5>
+                    
+                    <form method="post" action="#">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_current_password" class="form-label">Current Password</label>
+                            <input type="password" name="current_password" id="id_current_password" class="form-control" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_new_password1" class="form-label">New Password</label>
+                            <input type="password" name="new_password1" id="id_new_password1" class="form-control" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_new_password2" class="form-label">Confirm New Password</label>
+                            <input type="password" name="new_password2" id="id_new_password2" class="form-control" required>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary">Change Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Account Information</h5>
+                    <p class="card-text">
+                        <strong>Username:</strong> {{ user.username }}<br>
+                        <strong>Email:</strong> {{ user.email }}<br>
+                        <strong>Role:</strong> {{ user.get_role_display }}<br>
+                        <strong>Member Since:</strong> {{ user.date_joined|date:"F j, Y" }}<br>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Links</h5>
+                    <div class="list-group">
+                        <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-vote-yea me-2"></i> My Votes
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-chart-bar me-2"></i> Team Summary
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
