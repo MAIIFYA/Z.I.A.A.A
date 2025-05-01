@@ -18,7 +18,7 @@ try:
     admin_user = User.objects.get(username=ADMIN_USERNAME)
     print(f"Found admin user: {admin_user.username}")
 except User.DoesNotExist:
-    print(f"Error: Admin user 
+    print(f"Error: Admin user not found.")
     sys.exit(1)
 
 # --- Create Department (if not exists) ---
@@ -30,9 +30,9 @@ department, created = Department.objects.get_or_create(
     }
 )
 if created:
-    print(f"Department 
+    print(f"Department '{TEST_DEPARTMENT_NAME}' created.")
 else:
-    print(f"Department 
+    print(f"Department '{TEST_DEPARTMENT_NAME}' already exists.")
 
 # --- Create Team (if not exists) ---
 team, created = Team.objects.get_or_create(
@@ -43,9 +43,9 @@ team, created = Team.objects.get_or_create(
     }
 )
 if created:
-    print(f"Team 
+    print(f"Team '{TEST_TEAM_NAME}' created.")
 else:
-    print(f"Team 
+    print(f"Team '{TEST_TEAM_NAME}' already exists.")
 
 # --- Add Admin User to Team Members (if not already) ---
 if not team.members.filter(id=admin_user.id).exists():
@@ -69,9 +69,9 @@ for card_info in cards_data:
         defaults=card_info
     )
     if created:
-        print(f"Health Card 
+        print(f"Health Card '{card_info['title']}' created.")
     else:
-        print(f"Health Card 
+        print(f"Health Card '{card_info['title']}' already exists.")
     created_cards.append(card)
 
 # --- Create Health Check Session (if no open session for team exists) ---
