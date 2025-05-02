@@ -1,0 +1,90 @@
+[
+  {
+    "title": "Delivering Value",
+    "description": "Are we delivering value to our customers and stakeholders?",
+    "example_green": "We consistently receive positive feedback and metrics show high customer satisfaction.",
+    "example_amber": "We deliver value, but feedback is mixed or metrics are inconsistent.",
+    "example_red": "We are struggling to deliver value; feedback is poor and metrics are low.",
+    "image_path": "images/health_cards/delivering_value.png"
+  },
+  {
+    "title": "Easy to Release",
+    "description": "Is it easy to release changes to production?",
+    "example_green": "Releases are automated, quick, and painless.",
+    "example_amber": "Releases are manageable but involve manual steps or occasional issues.",
+    "example_red": "Releases are difficult, time-consuming, and often cause problems.",
+    "image_path": "images/health_cards/easy_to_release.png"
+  },
+  {
+    "title": "Fun",
+    "description": "Are we having fun working together?",
+    "example_green": "The team enjoys working together and the atmosphere is positive.",
+    "example_amber": "Work is okay, but the team isn\u2019t particularly energized or having fun.",
+    "example_red": "Team morale is low, and work feels like a chore.",
+    "image_path": "images/health_cards/fun.png"
+  },
+  {
+    "title": "Health of Codebase",
+    "description": "Is the codebase healthy and easy to work with?",
+    "example_green": "The code is clean, well-tested, and easy to understand and modify.",
+    "example_amber": "The codebase has some technical debt but is generally manageable.",
+    "example_red": "The codebase is messy, complex, and difficult to work with.",
+    "image_path": "images/health_cards/code_quality.png"
+  },
+  {
+    "title": "Learning",
+    "description": "Are we continuously learning and improving?",
+    "example_green": "We actively share knowledge, learn new skills, and improve our ways of working.",
+    "example_amber": "We learn occasionally, but it\u2019s not a consistent focus.",
+    "example_red": "We are stuck in old habits and rarely learn or try new things.",
+    "image_path": "images/health_cards/learning.png"
+  },
+  {
+    "title": "Speed",
+    "description": "Are we able to deliver changes quickly?",
+    "example_green": "We can quickly deliver features and fixes from idea to production.",
+    "example_amber": "Delivery speed is acceptable but could be faster.",
+    "example_red": "Delivery is slow and hampered by bottlenecks.",
+    "image_path": "images/health_cards/speed.png"
+  },
+  {
+    "title": "Teamwork",
+    "description": "Do we collaborate effectively as a team?",
+    "example_green": "We collaborate seamlessly, support each other, and resolve conflicts constructively.",
+    "example_amber": "Collaboration is okay, but there are occasional silos or communication issues.",
+    "example_red": "Teamwork is poor, with conflicts, lack of trust, or poor communication.",
+    "image_path": "images/health_cards/teamwork.png"
+  },
+  {
+    "title": "Mission",
+    "description": "Do we have a clear mission and goals?",
+    "example_green": "We have a clear, shared understanding of our mission and how our work contributes to it.",
+    "example_amber": "The mission is somewhat clear, but there's some ambiguity or disagreement.",
+    "example_red": "We lack a clear mission or understanding of how our work fits into the bigger picture.",
+    "image_path": "images/health_cards/mission.png" 
+  },
+  {
+    "title": "Empowerment",
+    "description": "Does the team feel empowered to make decisions?",
+    "example_green": "We feel empowered to make decisions about our work and how we do it.",
+    "example_amber": "We have some autonomy, but often need approval for decisions we could make ourselves.",
+    "example_red": "We feel disempowered and decisions are mostly made outside the team.",
+    "image_path": "images/health_cards/empowerment.png"
+  },
+  {
+    "title": "Suitable Process",
+    "description": "Do our processes support our work effectively?",
+    "example_green": "Our processes are efficient, effective, and help us deliver value smoothly.",
+    "example_amber": "Our processes work, but have some inefficiencies or areas for improvement.",
+    "example_red": "Our processes are cumbersome, bureaucratic, or hinder our ability to work effectively.",
+    "image_path": "images/health_cards/process.png"
+  },
+  {
+    "title": "Support",
+    "description": "Do we feel supported by the organization and colleagues?",
+    "example_green": "We feel well-supported by management, stakeholders, and other teams when needed.",
+    "example_amber": "Support is available but sometimes hard to get or inconsistent.",
+    "example_red": "We feel unsupported, blocked, or lack the resources/help needed to succeed.",
+    "image_path": "images/health_cards/support.png"
+  }
+]

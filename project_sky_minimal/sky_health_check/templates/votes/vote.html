@@ -1,0 +1,451 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Vote | Sky Health Check{% endblock %}
+
+{% block extra_css %}
+<style>
+    .vote-option {
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 5px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: inline-block; /* Make it inline-block to center */
+    }
+    .vote-option:hover {
+        transform: scale(1.05);
+    }
+    .vote-option.selected {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.5); /* Blue shadow for selected */
+        border: 2px solid #007bff;
+    }
+    .traffic-light .light {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin: 5px auto; /* Center lights horizontally */
+        background-color: #ccc; /* Default off color */
+        opacity: 0.3;
+        transition: opacity 0.3s ease;
+    }
+    .traffic-light .light.red { background-color: red; }
+    .traffic-light .light.amber { background-color: orange; }
+    .traffic-light .light.green { background-color: green; }
+
+    /* Styles for active lights based on vote value */
+    .vote-option[data-value="red"] .light.red,
+    .vote-option[data-value="amber"] .light.amber,
+    .vote-option[data-value="green"] .light.green {
+        opacity: 1;
+    }
+
+    /* Style for the selected vote option's lights */
+    .vote-option.selected[data-value="red"] .light.red { opacity: 1; }
+    .vote-option.selected[data-value="amber"] .light.amber { opacity: 1; }
+    .vote-option.selected[data-value="green"] .light.green { opacity: 1; }
+
+    /* Ensure non-selected lights in selected option are dim */
+    .vote-option.selected[data-value="red"] .light.amber,
+    .vote-option.selected[data-value="red"] .light.green,
+    .vote-option.selected[data-value="amber"] .light.red,
+    .vote-option.selected[data-value="amber"] .light.green,
+    .vote-option.selected[data-value="green"] .light.red,
+    .vote-option.selected[data-value="green"] .light.amber {
+        opacity: 0.3;
+    }
+
+    .card-img-top {
+        width: 80px; /* Adjust size as needed */
+        height: 80px;
+        object-fit: contain; /* Keep aspect ratio */
+        margin: 15px auto 0; /* Center image */
+        display: block;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Health Check Vote</h1>
+
+    {% if not sessions %}
+        <div class="alert alert-warning" role="alert">
+            There are no open health check sessions available for you to vote in.
+        </div>
+    {% else %}
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Select Session</h5>
+                        <select class="form-select" id="session-select">
+                            <option selected disabled value="">-- Select a Session --</option>
+                            {% for session in sessions %}
+                            <option value="{{ session.id }}" data-team-name="{{ session.team.name }}">{{ session.team.name }} - {{ session.name }} ({{ session.session_date }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Start Voting</h5>
+                        <button class="btn btn-primary w-100" id="start-vote-btn" disabled>Load Session & Vote</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="voting-area" class="d-none">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 id="card-counter" class="text-muted">Card 1 / X</h4>
+                        <button class="btn btn-sm btn-outline-secondary" id="close-voting-area-btn">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <img id="card-image" src="" alt="Health Card Icon" class="card-img-top mb-2">
+                        <h5 class="card-title mb-1" id="card-title">Card Title</h5>
+                        <p class="card-text text-muted mb-3" id="card-description">Card Description</p>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h6 class="card-subtitle mb-2 text-danger">Example: Red</h6>
+                                    <p class="card-text small" id="example-red">Description of the red example.</p>
+                                    <div class="traffic-light mx-auto" style="width: fit-content;">
+                                        <div class="light red" style="opacity: 1;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h6 class="card-subtitle mb-2 text-warning">Example: Amber</h6>
+                                    <p class="card-text small" id="example-amber">Description of the amber example.</p>
+                                    <div class="traffic-light mx-auto" style="width: fit-content;">
+                                        <div class="light amber" style="opacity: 1;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h6 class="card-subtitle mb-2 text-success">Example: Green</h6>
+                                    <p class="card-text small" id="example-green">Description of the green example.</p>
+                                    <div class="traffic-light mx-auto" style="width: fit-content;">
+                                        <div class="light green" style="opacity: 1;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3 text-center">Your Vote</h5>
+                    <div id="vote-options-container" class="row mb-4 justify-content-center">
+                        <div class="col-md-3 col-sm-4 text-center mb-2">
+                            <div class="traffic-light vote-option p-2 border rounded" data-value="red">
+                                <div class="light red"></div>
+                            </div>
+                            <p class="mt-1 mb-0">Red</p>
+                        </div>
+                        <div class="col-md-3 col-sm-4 text-center mb-2">
+                            <div class="traffic-light vote-option p-2 border rounded" data-value="amber">
+                                <div class="light amber"></div>
+                            </div>
+                            <p class="mt-1 mb-0">Amber</p>
+                        </div>
+                        <div class="col-md-3 col-sm-4 text-center mb-2">
+                            <div class="traffic-light vote-option p-2 border rounded" data-value="green">
+                                <div class="light green"></div>
+                            </div>
+                            <p class="mt-1 mb-0">Green</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="mb-3">Comment (Optional)</h5>
+                        <textarea class="form-control" id="comment-input" rows="3" placeholder="Add any comments here..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-secondary" id="prev-card-btn" disabled><i class="fas fa-arrow-left"></i> Previous</button>
+                        <span id="vote-status" class="text-muted small"></span>
+                        <button class="btn btn-primary" id="save-vote-btn" disabled>Save Vote</button>
+                        <button class="btn btn-secondary" id="next-card-btn">Next <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sessionSelect = document.getElementById('session-select');
+        const startVoteBtn = document.getElementById('start-vote-btn');
+        const votingArea = document.getElementById('voting-area');
+        const closeVotingAreaBtn = document.getElementById('close-voting-area-btn');
+
+        const cardCounter = document.getElementById('card-counter');
+        const cardImage = document.getElementById('card-image');
+        const cardTitle = document.getElementById('card-title');
+        const cardDescription = document.getElementById('card-description');
+        const exampleRed = document.getElementById('example-red');
+        const exampleAmber = document.getElementById('example-amber');
+        const exampleGreen = document.getElementById('example-green');
+        const voteOptionsContainer = document.getElementById('vote-options-container');
+        const commentInput = document.getElementById('comment-input');
+        const prevCardBtn = document.getElementById('prev-card-btn');
+        const nextCardBtn = document.getElementById('next-card-btn');
+        const saveVoteBtn = document.getElementById('save-vote-btn');
+        const voteStatus = document.getElementById('vote-status');
+
+        let currentSessionId = null;
+        let healthCards = [];
+        let userVotes = {}; // Store user votes keyed by card_id: { vote_value: '...', comment: '...' }
+        let currentCardIndex = 0;
+        let currentVoteValue = null;
+
+        // Enable Start button when a session is selected
+        sessionSelect.addEventListener('change', function() {
+            if (this.value) {
+                startVoteBtn.disabled = false;
+                currentSessionId = this.value;
+                // Hide voting area if session changes
+                votingArea.classList.add('d-none');
+            } else {
+                startVoteBtn.disabled = true;
+                currentSessionId = null;
+                votingArea.classList.add('d-none');
+            }
+        });
+
+        // Load session data and show voting area
+        startVoteBtn.addEventListener('click', function() {
+            if (!currentSessionId) return;
+
+            // Disable button while loading
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+            voteStatus.textContent = 'Loading session data...';
+
+            // Fetch cards and previous votes for the selected session
+            fetch(`/votes/api/vote/user/${currentSessionId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    healthCards = data.cards || []; // Assuming API returns cards under 'cards'
+                    userVotes = {};
+                    if (data.votes) {
+                        data.votes.forEach(vote => {
+                            userVotes[vote.health_card_id] = {
+                                vote_value: vote.vote_value,
+                                comment: vote.comment
+                            };
+                        });
+                    }
+
+                    if (healthCards.length > 0) {
+                        currentCardIndex = 0;
+                        updateCardDisplay();
+                        votingArea.classList.remove('d-none');
+                        votingArea.classList.add('fade-in');
+                        votingArea.scrollIntoView({ behavior: 'smooth' });
+                        voteStatus.textContent = '';
+                    } else {
+                        voteStatus.textContent = 'No health cards found for this session.';
+                        votingArea.classList.add('d-none');
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching session data:", error);
+                    let alertMessage = "Failed to load session data. Please try again.";
+                    if (error.message.includes("403")) {
+                        alertMessage = "Permission denied. You may not have access to vote in this session.";
+                    }
+                    voteStatus.textContent = "Error loading session data.";
+                    alert(alertMessage);
+                })
+                .finally(() => {
+                    // Re-enable button
+                    this.disabled = false;
+                    this.innerHTML = 'Load Session & Vote';
+                });
+        });
+
+        // Close voting area
+        closeVotingAreaBtn.addEventListener('click', function() {
+            votingArea.classList.add('d-none');
+            // Optionally reset state
+            healthCards = [];
+            userVotes = {};
+            currentCardIndex = 0;
+            sessionSelect.value = '';
+            startVoteBtn.disabled = true;
+        });
+
+        // Handle vote selection
+        voteOptionsContainer.addEventListener('click', function(event) {
+            const voteOption = event.target.closest('.vote-option');
+            if (!voteOption) return;
+
+            // Remove selected class from all options
+            voteOptionsContainer.querySelectorAll('.vote-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Add selected class to the clicked option
+            voteOption.classList.add('selected');
+            currentVoteValue = voteOption.dataset.value;
+            saveVoteBtn.disabled = false; // Enable save button once a vote is selected
+            voteStatus.textContent = ''; // Clear status
+        });
+
+        // Update card display function
+        function updateCardDisplay() {
+            if (healthCards.length === 0 || currentCardIndex < 0 || currentCardIndex >= healthCards.length) {
+                votingArea.classList.add('d-none');
+                return;
+            }
+
+            const card = healthCards[currentCardIndex];
+            const cardId = card.id;
+            const previousVote = userVotes[cardId];
+
+            cardCounter.textContent = `Card ${currentCardIndex + 1} / ${healthCards.length}`;
+            cardTitle.textContent = card.title;
+            cardDescription.textContent = card.description;
+            // Use static path helper for images
+            cardImage.src = card.image_path ? `{% static '' %}${card.image_path}` : '';
+            cardImage.alt = card.title;
+            exampleRed.textContent = card.example_red || 'N/A';
+            exampleAmber.textContent = card.example_amber || 'N/A';
+            exampleGreen.textContent = card.example_green || 'N/A';
+
+            // Reset vote selection UI
+            currentVoteValue = null;
+            saveVoteBtn.disabled = true;
+            voteOptionsContainer.querySelectorAll('.vote-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Pre-fill vote and comment if exists
+            if (previousVote) {
+                commentInput.value = previousVote.comment || '';
+                const selectedOption = voteOptionsContainer.querySelector(`.vote-option[data-value="${previousVote.vote_value}"]`);
+                if (selectedOption) {
+                    selectedOption.classList.add('selected');
+                    currentVoteValue = previousVote.vote_value;
+                    saveVoteBtn.disabled = false; // Enable save if already voted
+                }
+            } else {
+                commentInput.value = '';
+            }
+
+            // Update navigation buttons state
+            prevCardBtn.disabled = currentCardIndex === 0;
+            nextCardBtn.disabled = currentCardIndex === healthCards.length - 1;
+            voteStatus.textContent = ''; // Clear status on card change
+        }
+
+        // Navigation button listeners
+        prevCardBtn.addEventListener('click', function() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateCardDisplay();
+            }
+        });
+
+        nextCardBtn.addEventListener('click', function() {
+            if (currentCardIndex < healthCards.length - 1) {
+                currentCardIndex++;
+                updateCardDisplay();
+            }
+        });
+
+        // Save vote button listener
+        saveVoteBtn.addEventListener('click', function() {
+            if (!currentSessionId || currentCardIndex < 0 || currentCardIndex >= healthCards.length || !currentVoteValue) {
+                alert('Please select a vote value.');
+                return;
+            }
+
+            const cardId = healthCards[currentCardIndex].id;
+            const comment = commentInput.value.trim();
+
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+            voteStatus.textContent = 'Saving vote...';
+
+            // Get CSRF token
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch('/votes/api/vote/submit/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({
+                    session_id: currentSessionId,
+                    card_id: cardId,
+                    vote_value: currentVoteValue,
+                    comment: comment
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    voteStatus.textContent = 'Vote saved!';
+                    // Update local cache of user votes
+                    userVotes[cardId] = { vote_value: currentVoteValue, comment: comment };
+                    // Optionally move to next card automatically or provide feedback
+                    setTimeout(() => { voteStatus.textContent = ''; }, 2000);
+                } else {
+                    throw new Error(data.error || 'Failed to save vote.');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving vote:', error);
+                voteStatus.textContent = 'Error saving vote.';
+                alert(`Failed to save vote: ${error.message}`);
+            })
+            .finally(() => {
+                this.disabled = false;
+                this.innerHTML = 'Save Vote';
+                // Re-enable save button only if a vote is selected
+                if (currentVoteValue) {
+                    saveVoteBtn.disabled = false;
+                }
+            });
+        });
+
+    });
+</script>
+{% endblock %}
+

@@ -1,0 +1,104 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Dashboard | Sky Health Check{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Welcome, {{ user.first_name }}!</h1>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Your Profile</h5>
+                    <p class="card-text">
+                        <strong>Username:</strong> {{ user.username }}<br>
+                        <strong>Email:</strong> {{ user.email }}<br>
+                        <strong>Role:</strong> {{ user.get_role_display }}<br>
+                        {% if user.team %}
+                        <strong>Team:</strong> {{ user.team.name }}<br>
+                        <strong>Department:</strong> {{ user.team.department.name }}
+                        {% else %}
+                        <strong>Team:</strong> Not assigned<br>
+                        {% endif %}
+                    </p>
+                    <a href="{% url 'profile' %}" class="btn btn-primary">Update Profile</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Actions</h5>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-vote-yea me-2"></i> Participate in Health Check
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-chart-bar me-2"></i> View Team Summary
+                        </a>
+                        {% if user.is_team_leader or user.is_senior_manager or user.is_department_manager or user.is_admin %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-users me-2"></i> Manage Team
+                        </a>
+                        {% endif %}
+                        {% if user.is_admin %}
+                        <a href="/admin" class="list-group-item list-group-item-action">
+                            <i class="fas fa-cog me-2"></i> Administration
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Health Check Sessions</h5>
+                    {% if recent_sessions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Team</th>
+                                    <th>Quarter</th>
+                                    <th>Year</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in recent_sessions %}
+                                <tr>
+                                    <td>{{ session.team.name }}</td>
+                                    <td>{{ session.quarter }}</td>
+                                    <td>{{ session.year }}</td>
+                                    <td>
+                                        <span class="badge {% if session.status == 'open' %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ session.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-primary">View</a>
+                                        {% if session.status == 'open' %}
+                                        <a href="#" class="btn btn-sm btn-success">Vote</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No recent health check sessions found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

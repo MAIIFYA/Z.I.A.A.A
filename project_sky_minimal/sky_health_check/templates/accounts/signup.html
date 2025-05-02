@@ -1,0 +1,109 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Sign Up | Sky Health Check{% endblock %}
+
+{% block auth_content %}
+<div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="col-md-6">
+        <div class="auth-card slide-in">
+            <div class="text-center mb-4">
+                <div class="logo mb-3">sky</div>
+                <h2 class="mb-1">Sign up to Sky Health Check</h2>
+                <p class="text-muted">This Is A Sign Up For SKY Engineers Only</p>
+            </div>
+            
+            <form method="post" action="{% url 'signup' %}">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_full_name" class="form-label">FULL NAME</label>
+                    <input type="text" name="full_name" id="id_full_name" class="form-control" placeholder="John Doe" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">USER NAME</label>
+                    <input type="text" name="username" id="id_username" class="form-control" placeholder="JohnD121" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_email" class="form-label">EMAIL ADDRESS</label>
+                    <input type="email" name="email" id="id_email" class="form-control" placeholder="johndoe@example.com" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_password1" class="form-label">PASSWORD</label>
+                    <div class="input-group">
+                        <input type="password" name="password1" id="id_password1" class="form-control" placeholder="••••••••••" required>
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword1">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="id_password2" class="form-label">CONFIRM PASSWORD</label>
+                    <div class="input-group">
+                        <input type="password" name="password2" id="id_password2" class="form-control" placeholder="••••••••••" required>
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword2">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" name="terms" id="id_terms" required>
+                    <label class="form-check-label" for="id_terms">
+                        I agree to the Terms of Service and Privacy Policy.
+                    </label>
+                </div>
+                
+                <input type="hidden" name="role" value="engineer">
+                
+                <button type="submit" class="btn btn-dark w-100 py-2 mb-3">CREATE AN ACCOUNT</button>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p>Already have an account? <a href="{% url 'login' %}" class="text-decoration-none">Sign In</a></p>
+            </div>
+        </div>
+        
+        <div class="text-center text-white mt-3">
+            <p>Sky UK ©2025 All Rights Reserved.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('togglePassword1').addEventListener('click', function() {
+        const passwordInput = document.getElementById('id_password1');
+        const icon = this.querySelector('i');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+    
+    document.getElementById('togglePassword2').addEventListener('click', function() {
+        const passwordInput = document.getElementById('id_password2');
+        const icon = this.querySelector('i');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+</script>
+{% endblock %}

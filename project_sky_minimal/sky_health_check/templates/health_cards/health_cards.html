@@ -1,0 +1,329 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Health Cards | Sky Health Check{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Health Cards Management</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Health Cards</h5>
+                        {% if user.is_admin %}
+                        <button class="btn btn-primary" id="add-card-btn">
+                            <i class="fas fa-plus"></i> Add New Card
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for card in health_cards %}
+                                <tr>
+                                    <td>{{ card.title }}</td>
+                                    <td>{{ card.description|truncatechars:50 }}</td>
+                                    <td>{{ card.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary view-card-btn" data-card-id="{{ card.id }}">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        {% if user.is_admin %}
+                                        <button class="btn btn-sm btn-outline-secondary edit-card-btn" data-card-id="{{ card.id }}">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger delete-card-btn" data-card-id="{{ card.id }}">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No health cards found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Card Modal -->
+<div class="modal fade" id="viewCardModal" tabindex="-1" aria-labelledby="viewCardModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewCardModalLabel">Health Card Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4 id="card-title">Code Quality</h4>
+                <p class="text-muted mb-4" id="card-description">How well is the codebase maintained?</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-danger text-white">
+                                <h6 class="mb-0">Crappy Example</h6>
+                            </div>
+                            <div class="card-body">
+                                <p id="crappy-example">Spaghetti code with no documentation or tests.</p>
+                                <div class="text-center">
+                                    <div class="traffic-light">
+                                        <div class="light red"></div>
+                                        <div class="light amber" style="opacity: 0.3;"></div>
+                                        <div class="light green" style="opacity: 0.3;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">Awesome Example</h6>
+                            </div>
+                            <div class="card-body">
+                                <p id="awesome-example">Well-structured code with comprehensive documentation and tests.</p>
+                                <div class="text-center">
+                                    <div class="traffic-light">
+                                        <div class="light red" style="opacity: 0.3;"></div>
+                                        <div class="light amber" style="opacity: 0.3;"></div>
+                                        <div class="light green"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Card Modal -->
+<div class="modal fade" id="cardFormModal" tabindex="-1" aria-labelledby="cardFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cardFormModalLabel">Add Health Card</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="cardForm">
+                    <input type="hidden" id="card-id" value="">
+                    
+                    <div class="mb-3">
+                        <label for="input-title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="input-title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="input-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="input-description" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="input-crappy-example" class="form-label">Crappy Example</label>
+                        <textarea class="form-control" id="input-crappy-example" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="input-awesome-example" class="form-label">Awesome Example</label>
+                        <textarea class="form-control" id="input-awesome-example" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-card-btn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteCardModal" tabindex="-1" aria-labelledby="deleteCardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCardModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this health card? This action cannot be undone.</p>
+                <p><strong>Title: </strong><span id="delete-card-title"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sample data for demonstration
+        const healthCards = [
+            {
+                id: 1,
+                title: 'Code Quality',
+                description: 'How well is the codebase maintained?',
+                crappyExample: 'Spaghetti code with no documentation or tests.',
+                awesomeExample: 'Well-structured code with comprehensive documentation and tests.',
+                createdAt: '2025-01-15'
+            },
+            {
+                id: 2,
+                title: 'Team Collaboration',
+                description: 'How well does the team work together?',
+                crappyExample: 'Team members work in silos with minimal communication.',
+                awesomeExample: 'Team members actively collaborate, share knowledge, and support each other.',
+                createdAt: '2025-01-15'
+            },
+            {
+                id: 3,
+                title: 'Delivery Pace',
+                description: 'How quickly and reliably does the team deliver?',
+                crappyExample: 'Frequent delays, missed deadlines, and unpredictable delivery.',
+                awesomeExample: 'Consistent delivery pace with reliable estimates and on-time completion.',
+                createdAt: '2025-01-15'
+            }
+        ];
+        
+        // View card button click
+        const viewCardButtons = document.querySelectorAll('.view-card-btn');
+        viewCardButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const cardId = this.dataset.cardId;
+                // In a real implementation, this would fetch the card data from the server
+                const card = healthCards.find(c => c.id == cardId) || healthCards[0];
+                
+                document.getElementById('card-title').textContent = card.title;
+                document.getElementById('card-description').textContent = card.description;
+                document.getElementById('crappy-example').textContent = card.crappyExample;
+                document.getElementById('awesome-example').textContent = card.awesomeExample;
+                
+                const viewCardModal = new bootstrap.Modal(document.getElementById('viewCardModal'));
+                viewCardModal.show();
+            });
+        });
+        
+        // Add card button click
+        const addCardBtn = document.getElementById('add-card-btn');
+        if (addCardBtn) {
+            addCardBtn.addEventListener('click', function() {
+                document.getElementById('cardFormModalLabel').textContent = 'Add Health Card';
+                document.getElementById('card-id').value = '';
+                document.getElementById('input-title').value = '';
+                document.getElementById('input-description').value = '';
+                document.getElementById('input-crappy-example').value = '';
+                document.getElementById('input-awesome-example').value = '';
+                
+                const cardFormModal = new bootstrap.Modal(document.getElementById('cardFormModal'));
+                cardFormModal.show();
+            });
+        }
+        
+        // Edit card button click
+        const editCardButtons = document.querySelectorAll('.edit-card-btn');
+        editCardButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const cardId = this.dataset.cardId;
+                // In a real implementation, this would fetch the card data from the server
+                const card = healthCards.find(c => c.id == cardId) || healthCards[0];
+                
+                document.getElementById('cardFormModalLabel').textContent = 'Edit Health Card';
+                document.getElementById('card-id').value = card.id;
+                document.getElementById('input-title').value = card.title;
+                document.getElementById('input-description').value = card.description;
+                document.getElementById('input-crappy-example').value = card.crappyExample;
+                document.getElementById('input-awesome-example').value = card.awesomeExample;
+                
+                const cardFormModal = new bootstrap.Modal(document.getElementById('cardFormModal'));
+                cardFormModal.show();
+            });
+        });
+        
+        // Delete card button click
+        const deleteCardButtons = document.querySelectorAll('.delete-card-btn');
+        deleteCardButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const cardId = this.dataset.cardId;
+                // In a real implementation, this would fetch the card data from the server
+                const card = healthCards.find(c => c.id == cardId) || healthCards[0];
+                
+                document.getElementById('delete-card-title').textContent = card.title;
+                document.getElementById('confirm-delete-btn').dataset.cardId = card.id;
+                
+                const deleteCardModal = new bootstrap.Modal(document.getElementById('deleteCardModal'));
+                deleteCardModal.show();
+            });
+        });
+        
+        // Save card button click
+        const saveCardBtn = document.getElementById('save-card-btn');
+        if (saveCardBtn) {
+            saveCardBtn.addEventListener('click', function() {
+                const cardId = document.getElementById('card-id').value;
+                const title = document.getElementById('input-title').value;
+                const description = document.getElementById('input-description').value;
+                const crappyExample = document.getElementById('input-crappy-example').value;
+                const awesomeExample = document.getElementById('input-awesome-example').value;
+                
+                if (!title || !description || !crappyExample || !awesomeExample) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                // In a real implementation, this would send the data to the server
+                alert(`Health card ${cardId ? 'updated' : 'created'} successfully!`);
+                
+                const cardFormModal = bootstrap.Modal.getInstance(document.getElementById('cardFormModal'));
+                cardFormModal.hide();
+                
+                // In a real implementation, this would refresh the page or update the table
+            });
+        }
+        
+        // Confirm delete button click
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.addEventListener('click', function() {
+                const cardId = this.dataset.cardId;
+                
+                // In a real implementation, this would send the delete request to the server
+                alert(`Health card deleted successfully!`);
+                
+                const deleteCardModal = bootstrap.Modal.getInstance(document.getElementById('deleteCardModal'));
+                deleteCardModal.hide();
+                
+                // In a real implementation, this would refresh the page or update the table
+            });
+        }
+    });
+</script>
+{% endblock %}

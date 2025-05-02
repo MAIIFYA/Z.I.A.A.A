@@ -1,0 +1,62 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Home - Sky Health Check{% endblock %}
+
+{% block content %}
+<div class="container mt-5 page-transition">
+    <div class="row">
+        <div class="col-md-12 text-center mb-4">
+            <h1 class="display-4">Welcome to Sky Health Check</h1>
+            <p class="lead">A platform for evaluating team health and tracking improvements</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        {% if user.is_authenticated %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-vote-yea fa-3x mb-3 text-primary"></i>
+                        <h3>Vote</h3>
+                        <p>Participate in health check sessions for your team</p>
+                        <a href="{% url 'vote_page' %}" class="btn btn-primary mt-2">Go to Voting</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x mb-3 text-primary"></i>
+                        <h3>Summaries</h3>
+                        <p>View team and department performance summaries</p>
+                        <a href="{% url 'team_summary' %}" class="btn btn-primary mt-2">View Summaries</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-cog fa-3x mb-3 text-primary"></i>
+                        <h3>Profile</h3>
+                        <p>Manage your account settings and preferences</p>
+                        <a href="{% url 'profile' %}" class="btn btn-primary mt-2">My Profile</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-md-6 offset-md-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h3>Get Started</h3>
+                        <p>Sign in to access the Sky Health Check platform</p>
+                        <a href="{% url 'login' %}" class="btn btn-primary me-2">Sign In</a>
+                        <a href="{% url 'signup' %}" class="btn btn-outline-primary">Create Account</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
